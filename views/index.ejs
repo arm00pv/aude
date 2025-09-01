@@ -2,18 +2,21 @@
 <html>
 <head>
   <title>Multi-App Deployer Script Generator</title>
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <h1>Multi-App Deployer Script Generator</h1>
+  <main>
+    <h1>Multi-App Deployer Script Generator</h1>
 
-  <form action="./generate-script" method="post">
-    <div id="apps-container">
-      <!-- App configs will be added here -->
-    </div>
-    <button type="button" id="add-app">Add App</button>
-    <br><br>
-    <input type="submit" value="Generate All-in-One Script">
-  </form>
+    <form action="./generate-script" method="post">
+      <div id="apps-container">
+        <!-- App configs will be added here -->
+      </div>
+      <button type="button" id="add-app">Add App</button>
+      <br><br>
+      <input type="submit" value="Generate All-in-One Script">
+    </form>
+  </main>
 
   <template id="app-template">
     <div class="app-config">
