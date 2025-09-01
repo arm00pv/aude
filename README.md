@@ -27,6 +27,7 @@ The application will be running at `http://localhost:3000`.
     *   **GitHub Repository URL:** The URL of the repository you want to deploy.
     *   **Server Path:** The absolute path on your server where the repository should be cloned/pulled.
     *   **User:** The user that will be used to run the deployment commands (for logging purposes).
+    *   **Webhook Secret:** A secret string that will be used to secure your webhook. This should match the secret you configure in the GitHub UI.
 5.  When you have configured all your applications, click "Generate All-in-One Script".
 6.  Your browser will download the generated script (`deploy-all-apps.js`).
 
@@ -52,7 +53,8 @@ For **each** of your configured repositories, you need to set up a webhook.
 2.  Go to "Webhooks" and click "Add webhook".
 3.  For "Payload URL", enter the URL of your deployment server and the webhook endpoint of your script (e.g., `http://<your-server-ip>:3001/webhook`).
 4.  For "Content type", select "application/json".
-5.  For "Which events would you like to trigger this webhook?", select "Just the push event.".
-6.  Click "Add webhook".
+5.  For "Secret", enter the same secret string you used when generating the script. This is highly recommended for security.
+6.  For "Which events would you like to trigger this webhook?", select "Just the push event.".
+7.  Click "Add webhook".
 
 Now, whenever you push to the `main` or `master` branch of any of your configured repositories, GitHub will send a webhook to your single deployment script, and the script will automatically find the correct configuration and deploy the application.

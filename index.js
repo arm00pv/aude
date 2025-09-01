@@ -23,11 +23,12 @@ app.post('/generate-script', (req, res) => {
         return res.status(400).send('Invalid input: "apps" must be an array.');
     }
 
-    // Sanitize the paths
+    // Sanitize the paths and include the secret
     const sanitizedApps = apps.map(app => ({
         github_url: app.github_url,
         path: app.path.replace(/\.\.\//g, ''),
-        user: app.user
+        user: app.user,
+        secret: app.secret
     }));
 
     fs.readFile(path.join(__dirname, 'script-template.js'), 'utf8', (err, template) => {
