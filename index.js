@@ -30,7 +30,7 @@ app.post('/generate-script', (req, res) => {
         user: app.user
     }));
 
-    fs.readFile('script-template.js', 'utf8', (err, template) => {
+    fs.readFile(path.join(__dirname, 'script-template.js'), 'utf8', (err, template) => {
         if (err) {
             console.error(err);
             return res.status(500).send('Error reading script template');
