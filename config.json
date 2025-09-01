@@ -1,0 +1,12 @@
+[
+  {
+    "github_url": "https://github.com/user/repo1",
+    "path": "/var/www/app1",
+    "user": "deploy-user1"
+  },
+  {
+    "github_url": "https://github.com/user/repo2",
+    "path": "/var/www/app2",
+    "user": "deploy-user2"
+  }
+]
