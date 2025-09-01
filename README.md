@@ -14,9 +14,12 @@ npm install
 
 # Start the application
 npm start
+
+# To run on a different port (e.g., 3005), use the PORT environment variable:
+PORT=3005 npm start
 ```
 
-The application will be running at `http://localhost:3000`.
+The application will be running on the configured port (defaulting to `3000`).
 
 ### 2. Generate the All-in-One Deployment Script
 
