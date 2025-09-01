@@ -1,21 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Auto Deployer Script Generator</title>
+  <title>Multi-App Deployer Script Generator</title>
 </head>
 <body>
-  <h1>Auto Deployer Script Generator</h1>
+  <h1>Multi-App Deployer Script Generator</h1>
 
   <form action="/generate-script" method="post">
-    <label for="github_url">GitHub Repository URL:</label><br>
-    <input type="text" id="github_url" name="github_url" size="50" required><br><br>
-    <label for="path">Server Path:</label><br>
-    <input type="text" id="path" name="path" size="50" required><br><br>
-    <label for="user">User:</label><br>
-    <input type="text" id="user" name="user" size="50" required><br><br>
-    <label for="port">Port:</label><br>
-    <input type="number" id="port" name="port" value="3001" required><br><br>
-    <input type="submit" value="Generate Script">
+    <div id="apps-container">
+      <!-- App configs will be added here -->
+    </div>
+    <button type="button" id="add-app">Add App</button>
+    <br><br>
+    <input type="submit" value="Generate All-in-One Script">
   </form>
+
+  <template id="app-template">
+    <div class="app-config">
+      <hr>
+      <label>GitHub Repository URL:</label><br>
+      <input type="text" name="github_url" size="50" required><br><br>
+      <label>Server Path:</label><br>
+      <input type="text" name="path" size="50" required><br><br>
+      <label>User:</label><br>
+      <input type="text" name="user" size="50" required><br><br>
+      <button type="button" class="remove-app">Remove App</button>
+    </div>
+  </template>
+
+  <script>
+    const addAppButton = document.getElementById('add-app');
+    const appsContainer = document.getElementById('apps-container');
+    const appTemplate = document.getElementById('app-template');
+    let appIndex = 0;
+
+    function addApp() {
+      const templateContent = appTemplate.content.cloneNode(true);
+      const appConfigDiv = templateContent.querySelector('.app-config');
+
+      appConfigDiv.querySelectorAll('input, select').forEach(input => {
+        input.name = `apps[${appIndex}][${input.name}]`;
+      });
+
+      appsContainer.appendChild(templateContent);
+      appIndex++;
+    }
+
+    appsContainer.addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-app')) {
+        e.target.closest('.app-config').remove();
+      }
+    });
+
+    addAppButton.addEventListener('click', addApp);
+
+    // Add one app by default
+    addApp();
+  </script>
 </body>
 </html>

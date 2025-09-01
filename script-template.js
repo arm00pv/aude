@@ -5,28 +5,24 @@ const fs = require('fs');
 const { exec } = require('child_process');
 
 const app = express();
-const port = <%= PORT %>;
+const port = 3001; // A default port for the main listener
 
-const config = {
-  github_url: '<%= GITHUB_URL %>',
-  path: '<%= PATH %>',
-  user: '<%= USER %>'
-};
+const appsConfig = <%= APPS_CONFIG %>;
 
-async function deploy() {
-  console.log(`Deploying as user: ${config.user}`);
+async function deploy(appConfig) {
+  console.log(`Deploying ${appConfig.github_url} as user: ${appConfig.user}`);
   const git = simpleGit();
   try {
-    if (fs.existsSync(config.path)) {
-      console.log(`Pulling latest changes for ${config.github_url} into ${config.path}`);
-      await git.cwd(config.path).pull();
+    if (fs.existsSync(appConfig.path)) {
+      console.log(`Pulling latest changes for ${appConfig.github_url} into ${appConfig.path}`);
+      await git.cwd(appConfig.path).pull();
     } else {
-      console.log(`Cloning ${config.github_url} into ${config.path}`);
-      await git.clone(config.github_url, config.path);
+      console.log(`Cloning ${appConfig.github_url} into ${appConfig.path}`);
+      await git.clone(appConfig.github_url, appConfig.path);
     }
-    console.log('Deployment successful.');
+    console.log(`Deployment of ${appConfig.github_url} successful.`);
   } catch (error) {
-    console.error('Deployment failed:', error);
+    console.error(`Deployment of ${appConfig.github_url} failed:`, error);
   }
 }
 
@@ -34,16 +30,29 @@ app.use(bodyParser.json());
 
 app.post('/webhook', (req, res) => {
   console.log('Webhook received!');
-  if (req.body.ref === 'refs/heads/main' || req.body.ref === 'refs/heads/master') {
-    console.log('Push event to main/master branch detected. Starting deployment.');
-    deploy();
-    res.status(200).send('Webhook received and deployment started.');
+  const repoUrl = req.body.repository.html_url;
+
+  if (!repoUrl) {
+    return res.status(400).send('Repository URL not found in webhook payload.');
+  }
+
+  const appConfig = appsConfig.find(app => app.github_url === repoUrl);
+
+  if (appConfig) {
+    if (req.body.ref === 'refs/heads/main' || req.body.ref === 'refs/heads/master') {
+      console.log(`Push event to main/master branch for ${repoUrl}. Starting deployment.`);
+      deploy(appConfig);
+      res.status(200).send('Webhook received and deployment started.');
+    } else {
+      console.log(`Webhook for ${repoUrl} received, but not a push to the main/master branch.`);
+      res.status(200).send('Webhook received, but no action taken.');
+    }
   } else {
-    console.log('Webhook received, but not a push to the main/master branch.');
-    res.status(200).send('Webhook received, but no action taken.');
+    console.log(`No matching app configuration found for ${repoUrl}.`);
+    res.status(404).send('No configuration found for this repository.');
   }
 });
 
 app.listen(port, () => {
-  console.log(`Deployment script for ${config.github_url} listening at http://localhost:${port}`);
+  console.log(`Multi-app deployment script listening at http://localhost:${port}`);
 });

@@ -17,10 +17,18 @@ app.get('/', (req, res) => {
 });
 
 app.post('/generate-script', (req, res) => {
-    const { github_url, path: server_path, user, port: app_port } = req.body;
+    const { apps } = req.body;
 
-    // Sanitize the path to prevent path traversal
-    const sanitized_path = server_path.replace(/\.\.\//g, '');
+    if (!apps || !Array.isArray(apps)) {
+        return res.status(400).send('Invalid input: "apps" must be an array.');
+    }
+
+    // Sanitize the paths
+    const sanitizedApps = apps.map(app => ({
+        github_url: app.github_url,
+        path: app.path.replace(/\.\.\//g, ''),
+        user: app.user
+    }));
 
     fs.readFile('script-template.js', 'utf8', (err, template) => {
         if (err) {
@@ -29,13 +37,9 @@ app.post('/generate-script', (req, res) => {
         }
 
         const script = template
-            .replace(/<%= GITHUB_URL %>/g, github_url)
-            .replace(/<%= PATH %>/g, sanitized_path)
-            .replace(/<%= USER %>/g, user)
-            .replace(/<%= PORT %>/g, app_port);
+            .replace('<%= APPS_CONFIG %>', JSON.stringify(sanitizedApps, null, 2));
 
-        const repoName = github_url.split('/').pop().replace('.git', '');
-        const fileName = `deploy-${repoName}.js`;
+        const fileName = 'deploy-all-apps.js';
 
         res.setHeader('Content-disposition', `attachment; filename=${fileName}`);
         res.setHeader('Content-type', 'application/javascript');
