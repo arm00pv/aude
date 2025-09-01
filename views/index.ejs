@@ -1,48 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Auto Deployer Configuration</title>
+  <title>Auto Deployer Script Generator</title>
 </head>
 <body>
-  <h1>Auto Deployer Configuration</h1>
+  <h1>Auto Deployer Script Generator</h1>
 
-  <h2>Current Applications</h2>
-  <table border="1" cellpadding="5" cellspacing="0">
-    <thead>
-      <tr>
-        <th>GitHub Repository URL</th>
-        <th>Server Path</th>
-        <th>User</th>
-        <th>Documentation</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% if(config.length > 0) { %>
-        <% config.forEach(function(app) { %>
-          <tr>
-            <td><%= app.github_url %></td>
-            <td><%= app.path %></td>
-            <td><%= app.user %></td>
-            <td><a href="/docs/<%= app.github_url.split('/').pop() %>">View Docs</a></td>
-          </tr>
-        <% }); %>
-      <% } else { %>
-        <tr>
-          <td colspan="4">No applications configured yet.</td>
-        </tr>
-      <% } %>
-    </tbody>
-  </table>
-
-  <h2>Add New Application</h2>
-  <form action="/config" method="post">
+  <form action="/generate-script" method="post">
     <label for="github_url">GitHub Repository URL:</label><br>
     <input type="text" id="github_url" name="github_url" size="50" required><br><br>
     <label for="path">Server Path:</label><br>
     <input type="text" id="path" name="path" size="50" required><br><br>
     <label for="user">User:</label><br>
     <input type="text" id="user" name="user" size="50" required><br><br>
-    <input type="submit" value="Add Application">
+    <label for="port">Port:</label><br>
+    <input type="number" id="port" name="port" value="3001" required><br><br>
+    <input type="submit" value="Generate Script">
   </form>
 </body>
 </html>
