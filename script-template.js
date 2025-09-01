@@ -8,21 +8,32 @@ const app = express();
 const port = 3001; // A default port for the main listener
 
 const appsConfig = <%= APPS_CONFIG %>;
+const deploying = new Set();
 
 async function deploy(appConfig) {
-  console.log(`Deploying ${appConfig.github_url} as user: ${appConfig.user}`);
-  const git = simpleGit();
+  const repoUrl = appConfig.github_url;
+  if (deploying.has(repoUrl)) {
+    console.log(`Deployment for ${repoUrl} is already in progress. Skipping.`);
+    return;
+  }
+
+  deploying.add(repoUrl);
   try {
+    console.log(`Deploying ${repoUrl} as user: ${appConfig.user}`);
+    const git = simpleGit();
     if (fs.existsSync(appConfig.path)) {
-      console.log(`Pulling latest changes for ${appConfig.github_url} into ${appConfig.path}`);
+      console.log(`Pulling latest changes for ${repoUrl} into ${appConfig.path}`);
       await git.cwd(appConfig.path).pull();
     } else {
-      console.log(`Cloning ${appConfig.github_url} into ${appConfig.path}`);
-      await git.clone(appConfig.github_url, appConfig.path);
+      console.log(`Cloning ${repoUrl} into ${appConfig.path}`);
+      await git.clone(repoUrl, appConfig.path);
     }
-    console.log(`Deployment of ${appConfig.github_url} successful.`);
+    console.log(`Deployment of ${repoUrl} successful.`);
   } catch (error) {
-    console.error(`Deployment of ${appConfig.github_url} failed:`, error);
+    console.error(`Deployment of ${repoUrl} failed:`, error);
+  } finally {
+    deploying.delete(repoUrl);
+    console.log(`Finished deployment process for ${repoUrl}. Lock released.`);
   }
 }
 
@@ -40,9 +51,10 @@ app.post('/webhook', (req, res) => {
 
   if (appConfig) {
     if (req.body.ref === 'refs/heads/main' || req.body.ref === 'refs/heads/master') {
-      console.log(`Push event to main/master branch for ${repoUrl}. Starting deployment.`);
+      console.log(`Push event to main/master branch for ${repoUrl}. Queueing deployment.`);
+      // Don't await deploy() here, so we can send a response to GitHub immediately.
       deploy(appConfig);
-      res.status(200).send('Webhook received and deployment started.');
+      res.status(202).send('Webhook received and deployment queued.'); // 202 Accepted is more appropriate here
     } else {
       console.log(`Webhook for ${repoUrl} received, but not a push to the main/master branch.`);
       res.status(200).send('Webhook received, but no action taken.');

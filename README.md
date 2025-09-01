@@ -40,6 +40,10 @@ The application will be running at `http://localhost:3000`.
     ```
 4.  The deployment script will start a single web server on port 3001, listening for webhooks for all your configured applications.
 
+### Reliability Features
+
+The generated script includes a locking mechanism to prevent issues with rapid, concurrent webhook events. If a deployment for a specific application is already in progress, any new webhooks for that same application will be safely ignored until the current deployment is complete. This ensures stability and prevents git repository corruption.
+
 ### 4. Set up the GitHub Webhooks
 
 For **each** of your configured repositories, you need to set up a webhook.
