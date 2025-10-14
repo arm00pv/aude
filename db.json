@@ -1,0 +1,10 @@
+[
+  {
+    "id": "1760457401797",
+    "github_url": "https://github.com/test/repo",
+    "path": "test-repo",
+    "user": "testuser",
+    "secret": "supersecret",
+    "postDeployCommand": "npm install"
+  }
+]

@@ -15,23 +15,26 @@ main {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-h1 {
+h1, h2 {
     text-align: center;
     color: #2c3e50;
     margin-bottom: 2rem;
 }
 
-#apps-container .app-config {
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-    padding-top: 2rem; /* Add padding to the top to make space for the remove button */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
 }
 
-#apps-container .app-config:first-child {
-    border-top: 1px solid #e0e0e0;
+th, td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+    font-weight: 600;
 }
 
 label {
@@ -42,8 +45,7 @@ label {
 }
 
 input[type="text"],
-input[type="password"],
-input[type="number"] {
+input[type="password"] {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ccc;
@@ -53,40 +55,36 @@ input[type="number"] {
 }
 
 button, input[type="submit"] {
-    padding: 0.75rem 1.5rem;
+    padding: 0.5rem 1rem;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    text-transform: uppercase;
 }
 
-#add-app, input[type="submit"] {
+input[type="submit"] {
     background-color: #3498db;
     color: white;
     transition: background-color 0.3s;
 }
 
-#add-app:hover, input[type="submit"]:hover {
+input[type="submit"]:hover {
     background-color: #2980b9;
 }
 
-.remove-app {
+td button {
     background-color: #e74c3c;
     color: white;
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
     transition: background-color 0.3s;
-    padding: 0.5rem 1rem;
-    font-size: 0.8rem;
 }
 
-.remove-app:hover {
+td button:hover {
     background-color: #c0392b;
 }
 
 hr {
-    display: none;
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+    margin: 2rem 0;
 }

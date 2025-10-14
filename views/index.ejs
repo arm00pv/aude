@@ -1,26 +1,51 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Multi-App Deployer Script Generator</title>
+  <title>Auto Deployer</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <main>
-    <h1>Multi-App Deployer Script Generator</h1>
+    <h1>Auto Deployer</h1>
 
-    <form action="./generate-script" method="post">
-      <div id="apps-container">
-        <!-- App configs will be added here -->
-      </div>
-      <button type="button" id="add-app">Add App</button>
-      <br><br>
-      <input type="submit" value="Generate All-in-One Script">
-    </form>
-  </main>
+    <h2>Existing Applications</h2>
+    <div id="apps-list">
+      <% if (apps && apps.length > 0) { %>
+        <table>
+          <thead>
+            <tr>
+              <th>GitHub URL</th>
+              <th>Path</th>
+              <th>User</th>
+              <th>Post-Deploy Command</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% apps.forEach(app => { %>
+              <tr>
+                <td><%= app.github_url %></td>
+                <td><%= app.path %></td>
+                <td><%= app.user %></td>
+                <td><code><%= app.postDeployCommand %></code></td>
+                <td>
+                  <form action="/delete-app/<%= app.id %>" method="post" style="display:inline;">
+                    <button type="submit">Delete</button>
+                  </form>
+                </td>
+              </tr>
+            <% }) %>
+          </tbody>
+        </table>
+      <% } else { %>
+        <p>No applications configured yet.</p>
+      <% } %>
+    </div>
 
-  <template id="app-template">
-    <div class="app-config">
-      <hr>
+    <hr>
+
+    <h2>Add New Application</h2>
+    <form action="/add-app" method="post">
       <label>GitHub Repository URL:</label><br>
       <input type="text" name="github_url" size="50" required><br><br>
       <label>Server Path:</label><br>
@@ -28,11 +53,11 @@
       <label>User:</label><br>
       <input type="text" name="user" size="50" required><br><br>
       <label>Webhook Secret:</label><br>
-      <input type="password" name="secret" size="50" required><br><br>
-      <button type="button" class="remove-app">Remove App</button>
-    </div>
-  </template>
-
-  <script src="/main.js" defer></script>
+      <input type="password" name="secret" size="50"><br><br>
+      <label>Post-Deploy Command:</label><br>
+      <input type="text" name="postDeployCommand" size="50"><br><br>
+      <input type="submit" value="Add Application">
+    </form>
+  </main>
 </body>
 </html>
